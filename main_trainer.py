@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 ###############################################################################
 # Name        : main_trainer
-# Description : Performs training, validation and testing using the desired
 #               data generator. All combinations of three datasets are used.
 # Notes       : To properly use it, proceed as follows:
 #               * Consistently define outputSize,theDataGenerator and
@@ -41,8 +40,8 @@
 #               us if you use this software.
 ###############################################################################
 import sys
-sys.path.remove('/opt/ros/kinetic/lib/python2.7/dist-packages') # only if ROS is installed
-cd /home/xesc/RECERCA/SUMMUM/CNN/python/NNLOOP # cd where you have your DATASETS folder
+# sys.path.remove('/opt/ros/kinetic/lib/python2.7/dist-packages') # only if ROS is installed
+# cd /home/xesc/RECERCA/SUMMUM/CNN/python/NNLOOP # cd where you have your DATASETS folder
 
 from dataset import DataSet
 from datagenerator import DataGeneratorHALOCImages

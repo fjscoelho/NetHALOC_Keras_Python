@@ -13,9 +13,10 @@ from keras import layers
 from keras import models
 from pickle import dump,load
 from os.path import splitext
-from keras.models import load_model
+from keras.api.models import load_model
 import matplotlib.pyplot as plt
-from keras.models import Model
+from keras.api.models import Model
+from tensorflow.keras.callbacks import EarlyStopping
 
 class ModelWrapper:
     # Constructor. Please note that it does NOT create the model
@@ -32,6 +33,7 @@ class ModelWrapper:
     # dense layers.        
     def create(self):
         self.theModel=models.Sequential()
+        self.theModel.add(layers.Input(shape=(240, 320, 3)))   # Estou explicitando o formato da entrada
         self.theModel.add(layers.Conv2D(128,(3,3),strides=(2,2),activation='sigmoid',input_shape=self.inputShape))
         self.theModel.add(layers.MaxPool2D((3,3),strides=(2,2)))
         self.theModel.add(layers.Conv2D(64,(3,3),strides=(1,1),activation='sigmoid'))
@@ -44,11 +46,13 @@ class ModelWrapper:
       #  self.theModel.add(layers.Dense(512, activation='sigmoid'))
         self.theModel.add(layers.Dense(self.outputSize, activation='sigmoid'))
         self.theModel.compile(optimizer='rmsprop',loss='mse',metrics=['mae'])
+        # print(self.theModel.input)
+
         self.__define_cnnmodel__()
       
     # Private method to define the aforementioned cnnModel
     def __define_cnnmodel__(self):
-        self.cnnModel=Model(inputs=self.theModel.input,outputs=self.theModel.layers[5].output)
+        self.cnnModel=Model(inputs=self.theModel.input,outputs=self.theModel.layers[8].output) # modifiquei a saída para a última camada
 
     # Just a helper to build filenames
     def __build_filenames__(self,fileName):
