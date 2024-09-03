@@ -15,6 +15,21 @@ from dataset import DataSet
 from datagenerator import DataGeneratorHALOCImages
 from modelwrapper import ModelWrapper
 
+# teste do método que carrega o modelo
+
+# Create the model, 384 is the lenght of the hash
+print('[[ CREATING THE MODEL ]]')
+theModel=ModelWrapper(outputSize=384) 
+print('[[ LOADING THE MODEL ]]')
+theModel.load('TEST_MODEL_trainDS2_valDS1_swapt_dense_layers')
+print('[[ MODEL SAVED ]]')
+
+# Plot the training history
+print('[[ PLOTTING TRAINING HISTORY ]]')
+theModel.plot_training_history()
+print('[[ PLOT DONE ]]')
+
+
 # Load three datasets
 print('[[ LOADING DATASETS ]]')
 dataSet1=DataSet('DATASETS/DATASET1.TXT')

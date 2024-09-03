@@ -1,4 +1,5 @@
 DATASETS/
 NetHALOC/
 __pycache__/
-
+TEST_RESULTS/
+TRAINED_MODELS

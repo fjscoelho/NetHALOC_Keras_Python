@@ -9,13 +9,19 @@
 #               us if you use this software.
 ###############################################################################
 
-from keras import layers
-from keras import models
+# from keras import layers
+# from keras import models
 from pickle import dump,load
 from os.path import splitext
-from keras.api.models import load_model
+# from keras.api.models import load_model
 import matplotlib.pyplot as plt
-from keras.api.models import Model
+# from keras.api.models import Model
+
+import tensorflow as tf
+from tensorflow.keras.models import Sequential, load_model
+from tensorflow.keras.layers import Conv2D, Input, Dense, MaxPool2D, Flatten
+from tensorflow.keras.datasets import mnist
+from tensorflow.keras.models import Model
 from tensorflow.keras.callbacks import EarlyStopping
 
 class ModelWrapper:
@@ -32,27 +38,34 @@ class ModelWrapper:
     # Creates the model (theModel) and a second model (cnnModel) neglecting the
     # dense layers.        
     def create(self):
-        self.theModel=models.Sequential()
-        self.theModel.add(layers.Input(shape=(240, 320, 3)))   # Estou explicitando o formato da entrada
-        self.theModel.add(layers.Conv2D(128,(3,3),strides=(2,2),activation='sigmoid',input_shape=self.inputShape))
-        self.theModel.add(layers.MaxPool2D((3,3),strides=(2,2)))
-        self.theModel.add(layers.Conv2D(64,(3,3),strides=(1,1),activation='sigmoid'))
-        self.theModel.add(layers.MaxPool2D((3,3),strides=(2,2)))
-        self.theModel.add(layers.Conv2D(4,(3,3),strides=(1,1),activation='sigmoid'))
-        self.theModel.add(layers.Flatten())
-        self.theModel.add(layers.Dense(512, activation='sigmoid'))
-        self.theModel.add(layers.Dense(1024, activation='sigmoid'))
-      #  self.theModel.add(layers.Dense(1024, activation='sigmoid')) # fbf 3/07/2019, since the last size for HALOC must be 384 (3*128), lets try with the dencent of the layers from 1024 to 384
-      #  self.theModel.add(layers.Dense(512, activation='sigmoid'))
-        self.theModel.add(layers.Dense(self.outputSize, activation='sigmoid'))
+        # Define the model
+        self.theModel = Sequential()
+
+        # Add an input layer
+        self.theModel.add(Input(shape=(240, 320, 3)))  # RGB images of size 240x320
+
+        # Add a hidden layers
+        self.theModel.add(Conv2D(filters=128, kernel_size=(3, 3), strides=(2,2), activation='sigmoid'))
+        self.theModel.add(MaxPool2D(pool_size=(3,3),strides=(2,2)))
+        self.theModel.add(Conv2D(filters=64,kernel_size=(3,3), strides=(1,1),activation='sigmoid'))
+        self.theModel.add(MaxPool2D(pool_size=(3,3),strides=(2,2)))
+        self.theModel.add(Conv2D(filters=4,kernel_size=(3,3),strides=(1,1),activation='sigmoid'))
+        self.theModel.add(Flatten())
+        self.theModel.add(Dense(512, activation='sigmoid'))
+        self.theModel.add(Dense(1024, activation='sigmoid'))
+        self.theModel.add(Dense(self.outputSize, activation='sigmoid'))
+
+        # Compile the model
         self.theModel.compile(optimizer='rmsprop',loss='mse',metrics=['mae'])
-        # print(self.theModel.input)
+
+        # # Summary of the model
+        self.theModel.summary()
 
         self.__define_cnnmodel__()
       
     # Private method to define the aforementioned cnnModel
     def __define_cnnmodel__(self):
-        self.cnnModel=Model(inputs=self.theModel.input,outputs=self.theModel.layers[8].output) # modifiquei a saída para a última camada
+        self.cnnModel=Model(inputs=self.theModel.inputs,outputs=self.theModel.outputs) # modifiquei a saída para a última camada
 
     # Just a helper to build filenames
     def __build_filenames__(self,fileName):
@@ -72,11 +85,11 @@ class ModelWrapper:
     # Loads the model and the training history
     def load(self,fileName):
         modelFName,histFName=self.__build_filenames__(fileName)
-        self.theModel=load_model(modelFName)        
+        self.theModel=load_model(modelFName, compile = False)    # inseri a flag compile = False em 02/09     
         with open(histFName,'rb') as histFile:
             self.trainHistory=load(histFile)
-        self.inputShape=self.theModel.layers[0].input_shape[1:]
-        self.outputSize=self.theModel.layers[-1].output_shape
+        self.inputShape=self.theModel.input_shape 
+        self.outputSize=self.theModel.output_shape
         self.__define_cnnmodel__()
         
     # Plots the training history
@@ -93,7 +106,20 @@ class ModelWrapper:
     # defined in datagenerators.py. Also note that the outputSize has to
     # coincide with the one provided by the data generators.
     def train(self,trainGenerator,valGenerator,nEpochs=100):
-        self.trainHistory=self.theModel.fit_generator(trainGenerator,epochs=nEpochs,validation_data=valGenerator).history
+        # Configura o EarlyStopping
+        early_stopping = EarlyStopping(
+            monitor='val_loss',      # Métrica a ser monitorada (val_loss, val_mae, etc.)
+            patience=10,             # Número de épocas sem melhoria após o qual o treinamento será interrompido
+            restore_best_weights=True # Restaura os melhores pesos do modelo encontrados durante o treinamento
+        )
+
+        # Treina o modelo com o EarlyStopping
+        self.trainHistory = self.theModel.fit(
+            trainGenerator,
+            epochs=nEpochs,
+            validation_data=valGenerator,
+            callbacks=[early_stopping] # Adiciona o callback
+        ).history
         
     # Evaluate the model
     def evaluate(self,testGenerator):

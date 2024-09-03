@@ -68,7 +68,7 @@ print('[[ MODEL CREATED ]]')
 
 # Train the model with dataset2 and validate with dataset1
 print('[[ TRAINING WITH DATASET2 AND VALIDATING WITH DATASET1 ]]')
-theModel.train(trainGenerator=dataGenerator2,valGenerator=dataGenerator1,nEpochs=10)
+theModel.train(trainGenerator=dataGenerator2,valGenerator=dataGenerator1,nEpochs=40)
 print('[[ MODEL TRAINED ]]')
 
 # Save the model

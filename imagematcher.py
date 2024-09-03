@@ -38,9 +38,21 @@ class ImageMatcher:
 
     # Obtain SIFT features        
     def _get_sift_(self,theImage):
-        gsImage=cv2.cvtColor(theImage,cv2.COLOR_RGB2GRAY)
-        theSIFT=cv2.xfeatures2d.SIFT_create()
-        return theSIFT.detectAndCompute(gsImage,None)
+        num_max_fea = 500  # Valor ajustado para 500
+
+        # # Normalização e conversão para uint8
+        # theImage = np.clip(theImage, 0, 1)  # Garante que os valores estão entre 0 e 1
+        # ubImage = (theImage * 255).astype('uint8')  # Conversão para 8 bits
+
+        # Criação do objeto SIFT com parâmetros ajustados
+        theSIFT = cv2.SIFT_create(
+            nfeatures=num_max_fea - 3,  # Ajusta o número máximo de características
+            contrastThreshold=0.04,  # Ajusta o limiar de contraste
+            edgeThreshold=10,  # Ajusta o limiar de borda
+            sigma=1.6  # Ajusta o valor sigma do Gaussian blur
+        )
+        
+        return theSIFT.detectAndCompute(theImage, None)
         
     # Get SIFT matches
     def _get_matches_(self,dRef,dCur):

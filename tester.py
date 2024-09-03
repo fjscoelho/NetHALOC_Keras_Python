@@ -55,14 +55,14 @@ class Tester:
             theModel=self.modelWrapper.cnnModel
         else:
             theModel=self.modelWrapper.theModel
-        thePredictions=np.zeros((numImages,theModel.layers[-1].output_shape[1]))
+        thePredictions=np.zeros((numImages,theModel.output_shape[1]))
                                    
         for iBatch in range(nBatches):
             iMin=iBatch*self.batchSize
             iMax=min((iBatch+1)*self.batchSize,numImages)
-            theImages=np.zeros((iMax-iMin,inputShape[0],inputShape[1],3))
+            theImages=np.zeros((iMax-iMin,inputShape[1],inputShape[2],3))
             for iImage in range(iMin,iMax):
-                theImages[iImage-iMin,]=resize(imgGetter(iImage),inputShape)
+                theImages[iImage-iMin,]=resize(imgGetter(iImage),inputShape[1:]) # Slice form index 1 
                 thePredictions[iMin:iMax,]=self.modelWrapper.predict(theImages,useCNN)
         return thePredictions
 

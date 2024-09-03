@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 ###############################################################################
 # Name        : DataGenerator
@@ -24,6 +25,8 @@ import cv2
 from skimage.feature import hog
 from sklearn.cluster import KMeans
 from os.path import exists
+
+
 
 ###############################################################################
 # Data generator that builds synthetic loops from the images in a datase and
@@ -148,175 +151,147 @@ class DataGeneratorHOGLoops(Sequence):
 ###############################################################################
     
 class DataGeneratorHALOCImages(Sequence):
-    def __init__(self,dataSet,batchSize=20,imgSize=(240,320),scaleMin=0.9,scaleMax=1.1,rotateMin=-90,rotateMax=90,
-                 txMin=-0.25,txMax=0.25,tyMin=-0.25,tyMax=0.25,numDesc=128):
-        vector1,vector2,vector3=self.__calculatevectors__(nmaxf=100)
-        self.dataSet=dataSet
-        self.batchSize=batchSize
-        self.imgSize=imgSize
-        self.scaleMin=scaleMin
-        self.scaleMax=scaleMax
-        self.rotateMin=rotateMin
-        self.rotateMax=rotateMax
-        self.txMin=txMin
-        self.txMax=txMax
-        self.tyMin=tyMin
-        self.tyMax=tyMax
-        self.numDesc=numDesc
-        self.vector1=vector1
-        self.vector2=vector2
-        self.vector3=vector3
+    def __init__(self, dataSet, batchSize=20, imgSize=(240, 320), scaleMin=0.9, scaleMax=1.1, rotateMin=-90, rotateMax=90,
+                 txMin=-0.25, txMax=0.25, tyMin=-0.25, tyMax=0.25, numDesc=128):
+        vector1, vector2, vector3 = self.__calculatevectors__(nmaxf=100)
+        self.dataSet = dataSet
+        self.batchSize = batchSize
+        self.imgSize = imgSize
+        self.scaleMin = scaleMin
+        self.scaleMax = scaleMax
+        self.rotateMin = rotateMin
+        self.rotateMax = rotateMax
+        self.txMin = txMin
+        self.txMax = txMax
+        self.tyMin = tyMin
+        self.tyMax = tyMax
+        self.numDesc = numDesc
+        self.vector1 = vector1
+        self.vector2 = vector2
+        self.vector3 = vector3
         self.on_epoch_end()
 
     def __len__(self):
-        return int(np.ceil(self.dataSet.numImages/float(self.batchSize)))
+        return int(np.ceil(self.dataSet.numImages / float(self.batchSize)))
 
-    def __getitem__(self,theIndex):
-        X=[]
-        y=[]
-        bStart=max(theIndex*self.batchSize,0)
-        bEnd=min((theIndex+1)*self.batchSize,self.dataSet.numImages)
-        for i in range(bStart,bEnd):
-            firstImage=self.dataSet.get_image(i)
-            secondImage=self.__random_transform__(firstImage)
-            theImage,theFeatures=self.__gettuple__([firstImage,secondImage])
-            X.append(theImage)
-            y.append(theFeatures)
-        return np.array(X),np.array(y)
-       
-    def __gettuple__(self,theLoop):
-        theImages=(resize(theLoop[0],self.imgSize),resize(theLoop[1],self.imgSize)) # fa un resize de les dues imatges rebudes
-        idxHALOC=int(np.round(np.random.uniform()))
-        idxImage=1-idxHALOC
-        halocFeatures=self.__get_descriptors__(theImages[idxHALOC])
-        return theImages[idxImage],halocFeatures
- 
-    def __image_transform__(self,theImage,scaleFactor,rotationAngle,txFactor,tyFactor):
-        centerY,centerX=np.array(theImage.shape[:2])/2.
-        theRotation=SimilarityTransform(rotation=np.deg2rad(rotationAngle))
-        theZoom=SimilarityTransform(scale=scaleFactor)
-        theShift=SimilarityTransform(translation=[-centerX,-centerY])
-        theShiftInv=SimilarityTransform(translation=[centerX,centerY])
-        theTranslation=SimilarityTransform(translation=[txFactor*2*centerX,tyFactor*2*centerY])
-        return warp(theImage, (theShift+(theRotation+theShiftInv))+(theShift+(theZoom+theShiftInv))+theTranslation, mode='reflect')
+    def __getitem__(self, theIndex):
+        X = []
+        y = []
+        bStart = max(theIndex * self.batchSize, 0)
+        bEnd = min((theIndex + 1) * self.batchSize, self.dataSet.numImages)
+        for i in range(bStart, bEnd):
+            firstImage = self.dataSet.get_image(i)
+            secondImage = self.__random_transform__(firstImage)
+            theImage, theFeatures = self.__gettuple__([firstImage, secondImage])
+            if theImage is not None and theImage.shape == (240, 320, 3):
+                if theFeatures is not None and theFeatures.size == 384:
+                    X.append(theImage)
+                    y.append(theFeatures)
 
-    def __random_transform__(self,theImage):
-        scaleFactor=np.random.uniform(self.scaleMin,self.scaleMax)
-        rotationAngle=np.random.uniform(self.rotateMin,self.rotateMax)
-        txFactor=np.random.uniform(self.txMin,self.txMax)
-        tyFactor=np.random.uniform(self.tyMin,self.tyMax)
-        outImage=self.__image_transform__(theImage,scaleFactor,rotationAngle,txFactor,tyFactor)
+        return np.array(X), np.array(y)
+
+    def __gettuple__(self, theLoop):
+        theImages = (resize(theLoop[0], self.imgSize), resize(theLoop[1], self.imgSize))
+        idxHALOC = int(np.round(np.random.uniform()))
+        idxImage = 1 - idxHALOC
+        halocFeatures = self.__get_descriptors__(theImages[idxHALOC])
+        return theImages[idxImage], halocFeatures
+
+    def __image_transform__(self, theImage, scaleFactor, rotationAngle, txFactor, tyFactor):
+        centerY, centerX = np.array(theImage.shape[:2]) / 2.
+        theRotation = SimilarityTransform(rotation=np.deg2rad(rotationAngle))
+        theZoom = SimilarityTransform(scale=scaleFactor)
+        theShift = SimilarityTransform(translation=[-centerX, -centerY])
+        theShiftInv = SimilarityTransform(translation=[centerX, centerY])
+        theTranslation = SimilarityTransform(translation=[txFactor * 2 * centerX, tyFactor * 2 * centerY])
+        return warp(theImage, (theShift + (theRotation + theShiftInv)) + (theShift + (theZoom + theShiftInv)) + theTranslation, mode='reflect')
+
+    def __random_transform__(self, theImage):
+        scaleFactor = np.random.uniform(self.scaleMin, self.scaleMax)
+        rotationAngle = np.random.uniform(self.rotateMin, self.rotateMax)
+        txFactor = np.random.uniform(self.txMin, self.txMax)
+        tyFactor = np.random.uniform(self.tyMin, self.tyMax)
+        outImage = self.__image_transform__(theImage, scaleFactor, rotationAngle, txFactor, tyFactor)
         return outImage
 
-    def __get_descriptors__(self,theImage): # theImage ja es un objecte imatge en format opencv
-        hash=np.zeros((384))
-        num_max_fea=100
-        # This norm. is just to prevent slightly larger than one values
-        theImage/=np.max(theImage)
-        ubImage=(theImage*255).astype('uint8')
-        gsImage=cv2.cvtColor(ubImage,cv2.COLOR_RGB2GRAY) # convert to gray scale before computing SIFT
-        theSIFT=cv2.xfeatures2d.SIFT_create(((num_max_fea)-3)) # crea un objecte tipus SIFT que penja de xfeatures2d
-        keyPoints,theDescriptors=theSIFT.detectAndCompute(gsImage,None) # detecta els keypoints i els descriptors, sense mascara
-        nbr_of_keypoints=len(keyPoints)
-        if nbr_of_keypoints==0:
-            print("ERROR: descriptor Matrix is Empty")
-            return 
-        if nbr_of_keypoints>len(self.vector1):
-            print("ERROR:  The number of descriptors is larger than the size of the projection vector. This should not happen.")
-            return
-        num_of_descriptors=theDescriptors.shape[0] #--> 100
-        num_of_components=theDescriptors.shape[1] # --> 128
- #   print (num_of_descriptors)
-        hash=[]
-        dot = 0
-        dot_normalized=0
-        suma = 0
-        for i in range(num_of_components):
-            suma=0
-            for j in range(num_of_descriptors):
-                dot = theDescriptors[j,i]*self.vector1[j] # for a fixed component, (a fixed column) vary the descriptor (row): dot product 
-    #between the matrix column and the vector
-                dot_normalized = (dot + 1.0) / 2.0
-                suma = suma + dot_normalized
+    def __get_descriptors__(self, theImage):
+        num_max_fea = 500  # Valor ajustado para 500
 
-            hash=np.append(hash, (suma/num_of_descriptors))   
-        for i in range(num_of_components):
-            suma=0
-            for j in range(num_of_descriptors):
-                dot = theDescriptors[j,i]*self.vector2[j] # for a fixed component, (a fixed column) vary the descriptor (row): dot product 
-    #between the matrix column and the vector
-                dot_normalized = (dot + 1.0) / 2.0
-                suma = suma + dot_normalized
+        # Normalização e conversão para uint8
+        theImage = np.clip(theImage, 0, 1)  # Garante que os valores estão entre 0 e 1
+        ubImage = (theImage * 255).astype('uint8')  # Conversão para 8 bits
 
-            hash=np.append(hash, (suma/num_of_descriptors))   
-        for i in range(num_of_components):
-            suma=0
-            for j in range(num_of_descriptors):
-                dot = theDescriptors[j,i]*self.vector3[j] # for a fixed component, (a fixed column) vary the descriptor (row): dot product 
-    #between the matrix column and the vector
-                dot_normalized = (dot + 1.0) / 2.0
-                suma = suma + dot_normalized
+        # Criação do objeto SIFT com parâmetros ajustados
+        theSIFT = cv2.SIFT_create(
+            nfeatures=num_max_fea - 3,  # Ajusta o número máximo de características
+            contrastThreshold=0.04,  # Ajusta o limiar de contraste
+            edgeThreshold=10,  # Ajusta o limiar de borda
+            sigma=1.6  # Ajusta o valor sigma do Gaussian blur
+        )
 
-            hash=np.append(hash, (suma/num_of_descriptors))   
+        # Detecção de keypoints e descritores
+        keyPoints, theDescriptors = theSIFT.detectAndCompute(ubImage, None)
+
+        # Depuração
+        if theDescriptors is None or theDescriptors.shape[0] == 0:
+            return np.zeros(384)
+
+        # Número de descritores e componentes
+        num_of_descriptors = theDescriptors.shape[0]
+        num_of_components = theDescriptors.shape[1]
+
+        # Pré-alocação do vetor hash
+        hash = np.zeros(384)
+
+        # Cálculo do hash para cada vetor (vector1, vector2, vector3)
+        for idx, vector in enumerate([self.vector1, self.vector2, self.vector3]):
+            for i in range(num_of_components):
+                suma = 0
+                for j in range(min(num_of_descriptors, len(vector))):
+                    dot = theDescriptors[j, i] * vector[j]
+                    dot_normalized = (dot + 1.0) / 2.0  # Normalização para [0, 1]
+                    suma += dot_normalized
+
+                # Armazena o valor normalizado no vetor hash
+                hash[i + idx * num_of_components] = suma / num_of_descriptors
+
         return hash
-        
-    def __calculatevectors__(self,nmaxf):
-        num_max_features=nmaxf
-         # get the 3 orthogonal unitary vectors
-        vector1=np.random.uniform(0,1,num_max_features); # crea un vector de nombres aleatoris, entre 0 i 1
-        vector1 /= np.linalg.norm(vector1) # normalitzo vector1
-        # ara vull crear dos vectors mes, que siguin ortogonals al vector1 i unitaris
-        #vector2  = np.random.uniform(0,1,num_max_features); # second random vector
-        #vector2 /= np.linalg.norm(vector2) # normalitzo vector2
-        vector2 = np.random.uniform(0,1,(num_max_features-1)); # second random vector, una component menys
-        const1=0
-        long=num_max_features-1
-        for i in range(long): # dot product between vector2 and vector 1 for the num_max_features-1 components
-            const1=const1+(vector1[i]*vector2[i])
 
-        xn=-const1/vector1[num_max_features-1] # the last component of vector2 i the one that makes vector1·vector2=0
-        vector2=np.append(vector2, xn) # add the last component to vector2. Now, vector 1 and vector 2 are orthogonals
+    def __calculatevectors__(self, nmaxf):
+        num_max_features = nmaxf
+        vector1 = np.random.uniform(0, 1, num_max_features)
+        vector1 /= np.linalg.norm(vector1)
+        vector2 = np.random.uniform(0, 1, (num_max_features - 1))
+        const1 = 0
+        long = num_max_features - 1
+        for i in range(long):
+            const1 += (vector1[i] * vector2[i])
 
-        #vector2 -= vector2.dot(vector1) * vector1  # faig vector2 ortogonal a vector 1
-        vector2 /= np.linalg.norm(vector2) # normalitzo vector2 otra vez
-        vector3 = np.random.uniform(0,1,(num_max_features-2)); # create another vector , random and unitary
-        #len(vector2), len(vector1), len(vector3)
+        xn = -const1 / vector1[num_max_features - 1]
+        vector2 = np.append(vector2, xn)
+        vector2 /= np.linalg.norm(vector2)
+        vector3 = np.random.uniform(0, 1, (num_max_features - 2))
 
-        # trec un vector 3 ortogonal a vector1 i a vector2, forçant totes les 
-        # components aleatories excepte les dues darreres, que seran el resultat de resoldre un sistema de 2 equacions amb 
-        # 2 incògnites on el producte escalar ha de ser 0 amb vector1 i vector2. 
+        const1 = 0
+        const2 = 0
+        long = num_max_features - 2
+        for i in range(long):
+            const1 += (vector1[i] * vector3[i])
+            const2 += (vector2[i] * vector3[i])
 
-        const1=0
-        const2=0
-        long=num_max_features-2
-        for i in range(long): # dot product between vector3 and the num_max_features-2 components of vector1 and vector2
-            const1=const1+(vector1[i]*vector3[i])
-            const2=const2+(vector2[i]*vector3[i])
+        A = np.array([[vector1[num_max_features - 2], vector1[num_max_features - 1]], [vector2[num_max_features - 2], vector2[num_max_features - 1]]])
+        B = np.array([-const1, -const2])
+        X = np.linalg.solve(A, B)
 
-        # force the last two elements of vector3 to be orthogonal to vector1 and vector2. Solve a linear system of 
-        # equations Ax=B, where A --> the last two components of vector1 and vector2, in the form of
-        # two rows of A, row 1 = vector1, row 2 = vector2. B is the constant components, taken from the 
-        # dot product between the first num_max_features-2 components of vector1 and the num_max_features-2 components of vector2, 
-        # with all the random components of vector3. And X are the last two components of vector3, in such a way that
-        # vector1 · vector3=0 and vector2 · vector3=0. 
-        A = np.array([[vector1[num_max_features-2],vector1[num_max_features-1]], [vector2[num_max_features-2],vector2[num_max_features-1]]])
-        B = np.array([-const1,-const2])
-        X = np.linalg.solve(A, B) # solve the linear system. X[0] is the penultimate element of vector3 ,X[1] is the last element of vector3
-        #np.allclose(np.dot(A, X), B) # true if Ax=B
+        vector3 = np.append(vector3, X[0])
+        vector3 = np.append(vector3, X[1])
+        vector3 /= np.linalg.norm(vector3)
 
-        vector3=np.append(vector3, X[0]) ## append the last two elements to vector3
-        vector3=np.append(vector3, X[1])
-        vector3 /= np.linalg.norm(vector3) # normalitzo vector3
-
-          #  print ("lengh of vector3: "+str(len(vector3)))
-
-        print(np.linalg.norm(vector1), np.linalg.norm(vector2), np.linalg.norm(vector3))
-        print(np.dot(vector1, vector2) , np.dot(vector3, vector2) , np.dot(vector1, vector3))
         return vector1, vector2, vector3
-    
-    
+
     def on_epoch_end(self):
         np.random.seed(0)
+
 
 ###############################################################################
 # Data generator that uses the existing loops in the database and uses
@@ -367,16 +342,17 @@ class DataGeneratorHALOCLoops(Sequence):
         # This norm. is just to prevent slightly larger than one values
         theImage/=np.max(theImage)
         ubImage=(theImage*255).astype('uint8')
+        print(ubImage.shape)
         gsImage=cv2.cvtColor(ubImage,cv2.COLOR_RGB2GRAY) # convert to gray scale before computing SIFT
         theSIFT=cv2.xfeatures2d.SIFT_create(((num_max_fea)-3)) 
         keyPoints,theDescriptors=theSIFT.detectAndCompute(gsImage,None) 
         nbr_of_keypoints=len(keyPoints)
-        if nbr_of_keypoints==0:
-            print("ERROR: descriptor Matrix is Empty")
-            return 
-        if nbr_of_keypoints>len(self.vector1):
-            print("ERROR:  The number of descriptors is larger than the size of the projection vector. This should not happen.")
-            return
+        # if nbr_of_keypoints==0:
+        #     print("ERROR: descriptor Matrix is Empty")
+        #     return 
+        # #if nbr_of_keypoints>len(self.vector1):
+        #     print("ERROR:  The number of descriptors is larger than the size of the projection vector. This should not happen.")
+        #     return
         num_of_descriptors=theDescriptors.shape[0] #--> 100
         num_of_components=theDescriptors.shape[1] # --> 128
         hash=[]
@@ -453,8 +429,8 @@ class DataGeneratorHALOCLoops(Sequence):
         vector3=np.append(vector3, X[1])
         vector3 /= np.linalg.norm(vector3) # normalize vector3
 
-        print(np.linalg.norm(vector1), np.linalg.norm(vector2), np.linalg.norm(vector3))
-        print(np.dot(vector1, vector2) , np.dot(vector3, vector2) , np.dot(vector1, vector3))
+        # print(np.linalg.norm(vector1), np.linalg.norm(vector2), np.linalg.norm(vector3))
+        # print(np.dot(vector1, vector2) , np.dot(vector3, vector2) , np.dot(vector1, vector3))
         return vector1, vector2, vector3
     
     def on_epoch_end(self):
