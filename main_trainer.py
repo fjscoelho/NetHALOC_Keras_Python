@@ -51,12 +51,14 @@ from tester import Tester
 print('[[ LOADING DATASETS ]]')
 dataSet1=DataSet('DATASETS/DATASET1.TXT')
 dataSet2=DataSet('DATASETS/DATASET2.TXT')
+dataSet3=DataSet('DATASETS/DATASET3.TXT')
 print('[[DATASETS LOADED ]]\n\n')
 
 # Create three data generators
 print('[[ CREATING DATA GENERATORS ]]')
 dataGenerator1=DataGeneratorHALOCImages(dataSet1,batchSize=4)
 dataGenerator2=DataGeneratorHALOCImages(dataSet2,batchSize=4)
+dataGenerator3=DataGeneratorHALOCImages(dataSet3,batchSize=4)
 print('[[ GENERATORS CREATED ]]\n\n')
 
 # Create the model, 384 is the lenght of the hash, this model corresponds to the swapt dense layer 
@@ -66,20 +68,20 @@ theModel=ModelWrapper(outputSize=384)
 theModel.create()
 print('[[ MODEL CREATED ]]')
 
-# Train the model with dataset2 and validate with dataset1
-print('[[ TRAINING WITH DATASET2 AND VALIDATING WITH DATASET1 ]]')
-theModel.train(trainGenerator=dataGenerator2,valGenerator=dataGenerator1,nEpochs=40)
+# Train the model with dataset and validate with dataset2
+print('[[ TRAINING WITH DATASET1 AND VALIDATING WITH DATASET3 ]]')
+theModel.train(trainGenerator=dataGenerator1,valGenerator=dataGenerator3,nEpochs=40)
 print('[[ MODEL TRAINED ]]')
 
 # Save the model
 print('[[ SAVING THE MODEL ]]')
-theModel.save('TEST_MODEL_trainDS2_valDS1_swapt_dense_layers')
+theModel.save('TRAINED_MODELS/ORIGINAL_MODEL_40EP_10ES/TEST_MODEL_trainDS1_valDS3')
 print('[[ MODEL SAVED ]]')
 
 # Loading the model (not necessary, since it is already loaded. Loading is
 # performed just for the sake of completeness)
 print('[[ LOADING THE MODEL ]]')
-theModel.load('TEST_MODEL_trainDS2_valDS1_swapt_dense_layers')
+theModel.load('TRAINED_MODELS/ORIGINAL_MODEL_40EP_10ES/TEST_MODEL_trainDS1_valDS3')
 print('[[ MODEL SAVED ]]')
 
 # Plot the training history
@@ -88,15 +90,15 @@ theModel.plot_training_history()
 print('[[ PLOT DONE ]]')
 
 # Load the test dataset
-print('[[ LOADING DATASET 1 ]]')
-dataSet=DataSet('DATASETS/DATASET1.TXT')
+print('[[ LOADING DATASET 2 ]]')
+dataSet=DataSet('DATASETS/DATASET2.TXT')
 print('[[ DATASET LOADED ]]')
 
 # Load the model, this model corresponds to the original dense layer configuration of the model wrapper: 512, 1024,384
-print('[[ LOADING THE MODEL ]]')
-theModel=ModelWrapper()
-theModel.load('TRAINED_MODELS/HALOC/loops/Loops_TEST_MODEL_trainDS3_valDS2')
-print('[[ MODEL LOADED ]]')
+# print('[[ LOADING THE MODEL ]]')
+# theModel=ModelWrapper()
+# theModel.load('TRAINED_MODELS/HALOC/loops/Loops_TEST_MODEL_trainDS3_valDS2')
+# print('[[ MODEL LOADED ]]')
 
 
 # Creating the tester
