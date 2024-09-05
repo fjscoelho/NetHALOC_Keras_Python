@@ -43,9 +43,9 @@ print('[[ TESTER CREATED ]]')
 
 # Computing and plotting hit ratio evolution
 print('[[ COMPUTING AND PLOTTING HIT RATIO EVOLUTION ]]')
-theHR,thaAUC=theTester.compute_hitratio_evolution()
-theTester.plot_hitratio_evolution()
-print('[[ HIT RATIO EVOLUTION COMPUTED AND PLOTTED ]]')
+# theHR,thaAUC=theTester.compute_hitratio_evolution()
+# theTester.plot_hitratio_evolution()
+# print('[[ HIT RATIO EVOLUTION COMPUTED AND PLOTTED ]]')
 
 # Computing and printing full stats
 print('[[ COMPUTING AND PRINTING FULL STATS ]]')

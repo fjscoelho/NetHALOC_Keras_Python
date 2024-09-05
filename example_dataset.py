@@ -33,7 +33,7 @@ print('[[ COMPARING DATASET1 TO ITSELF ]]')
 dataSet1.compare(dataSet1)
 print('[[ COMPARED ]]\n\n')
 
-# Let's compare dataSet1 to dataSet3
+# Let's compare dataSet1 to dataSet2
 print('[[ COMPARING DATASET1 TO DATASET2 ]]')
 dataSet1.compare(dataSet2)
 print('[[ COMPARED ]]\n\n')
