@@ -129,17 +129,18 @@ class Tester:
         print('  * STARTING TESTS')
         tp=tn=fp=fn=0
         tstart=time.time()
-        for qIndex in range(self.testDataSet.numQImages): #per totes les imatges Query 
-            dbLoopCandidates=np.argsort(theDistances[qIndex,:])[:nItems] # agafa els nItems amb menys distancia a la query 
-            qImage=self.testDataSet.get_qimage(qIndex) # recupera la imatge query 
-            dbActualLoops=self.testDataSet.get_qloop(qIndex) # busca totes les imatges de la dB que tanquen bucle amb la query qIndex
-            for dbIndex in range(self.testDataSet.numDBImages): # per totes les imatges de la dB
-                isLoop=dbIndex in dbActualLoops #mira si el dBIndex es dins del conjunt d'imatges que tanquen llaç
+        for qIndex in range(self.testDataSet.numQImages): # for all Query images
+            dbLoopCandidates=np.argsort(theDistances[qIndex,:])[:nItems] # get nItems with shortest distance to query
+            qImage=self.testDataSet.get_qimage(qIndex) # retrieve the query image
+            dbActualLoops=self.testDataSet.get_qloop(qIndex) # search for all dB images that contain a loop with the qIndex query
+
+            for dbIndex in range(self.testDataSet.numDBImages): # For all database images
+                isLoop=dbIndex in dbActualLoops # See if the dBIndex is identical to the set of images that contain loops
                 foundLoop=False
-                if dbIndex in dbLoopCandidates: # si la imatge dbIndex està dins dels 5 millors
+                if dbIndex in dbLoopCandidates: # If the DbIndex image is the five 5 loop candidates
                     dbImage=self.testDataSet.get_dbimage(dbIndex)
                     self.theMatcher.define_images(qImage,dbImage)
-                    foundLoop=self.theMatcher.estimate() # hi ha loop closing RANSAC entre query i dB
+                    foundLoop=self.theMatcher.estimate() # Verify if there is a loop closing RANSAC between query and dB
                     del dbImage
                 if foundLoop and isLoop:
                     tp+=1

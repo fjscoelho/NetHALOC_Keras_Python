@@ -15,6 +15,7 @@ from skimage.transform import resize
 from scipy.spatial.distance import cdist
 import numpy as np
 import matplotlib.pyplot as plt
+import cv2
 
 # Prepares an image to be useable by the Neural Network. This involves:
 # * Resizing it to the correct resolution
@@ -24,19 +25,28 @@ import matplotlib.pyplot as plt
 def prepare_image(theImage,imgSize):
     return resize(theImage,imgSize).reshape((1,imgSize[0],imgSize[1],3))
 
+# Verify if is a Gray scale image and convert to RGB
+def gs_to_RGB(theImage):
+    if len(theImage.shape) == 2: # GrayScale Image
+        RGBImage = cv2.cvtColor(theImage, cv2.COLOR_GRAY2RGB)
+    else:
+        RGBImage = theImage
+    return RGBImage    
+
+
 # Define some parameters
-queryToUse=9
+queryToUse=3
 
 # Load a dataset
 dataSet=DataSet('DATASETS/DATASET1.TXT')
 
 # Load a trained model.
 theModel=ModelWrapper()
-theModel.load('TRAINED_MODELS/SIFTIMAGES_T2_V3_EPOCHS15')
+theModel.load('TRAINED_MODELS/ORIGINAL_MODEL_40EP_10ES/TEST_MODEL_trainDS2_valDS1')
 
 # Get the image size (NN input shape) and the descriptor size (NN output shape)
-imgSize=theModel.cnnModel.layers[0].input_shape[1:3]
-descSize=theModel.cnnModel.layers[-1].output_shape[1]
+imgSize=theModel.cnnModel.input_shape[1:3]
+descSize=theModel.cnnModel.output_shape[1]
 
 # Select a query image
 queryImage=prepare_image(dataSet.get_qimage(queryToUse),imgSize)
@@ -50,7 +60,10 @@ queryDescriptor=theModel.predict(queryImage,useCNN=True)
 # in tester.py to see how to do it.
 dbDescriptors=[]
 for dbIndex in range(dataSet.numDBImages):
-    dbImage=prepare_image(dataSet.get_dbimage(dbIndex),imgSize)
+    dbImage = dataSet.get_dbimage(dbIndex)
+    dbImage = gs_to_RGB(dbImage)    # Convert to RGB if it is a GS image
+    # print('Database image ' + str(dbIndex) + ', Shape = ' + str(dbImage.shape) )
+    dbImage=prepare_image(dbImage,imgSize)
     dbDesc=theModel.predict(dbImage,useCNN=True)
     dbDescriptors.append(dbDesc[0])
 
@@ -68,7 +81,7 @@ actualLoops=dataSet.get_qloop(queryToUse)
 
 # Plot the query and the 5 images. For each of these 5 images, state if it is
 # an actual loop or not.
-plt.close('all')
+# plt.close('all')
 plt.figure()
 plt.subplot(2,3,1)
 # Plot the query
@@ -82,3 +95,6 @@ for i in range(5):
     # "ACTUAL LOOP".
     if loopCandidates[i] in actualLoops:
         plt.title('ACTUAL LOOP')
+
+plt.show()
+print("Figure plotted")

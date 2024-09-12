@@ -98,11 +98,15 @@ class DataSet:
         print('QUERY PATH:')
         print('  - '+self.qImagesPath)
         print('DATABASE FILES:')
+        dbIndex= 0
+        qIndex= 0
         for curFile in self.dbImageFns:
-            print('  - '+curFile)
+            print('  - '+curFile + ': Shape = ' + str(self.get_dbimage(dbIndex).shape))
+            dbIndex +=1 
         print('QUERY FILES:')
         for curFile in self.qImageFns:
-            print('  - '+curFile)
+            print('  - '+curFile + ': Shape = ' + str(self.get_qimage(qIndex).shape))
+            qIndex+=1 
         print('LOOPS:')
         for curLoop in self.theLoops:
             print('  - DB: '+self.dbImageFns[curLoop[0]]+' Q: '+self.qImageFns[curLoop[1]])

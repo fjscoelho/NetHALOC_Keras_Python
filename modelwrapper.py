@@ -42,7 +42,7 @@ class ModelWrapper:
         self.theModel = Sequential()
 
         # Add an input layer
-        self.theModel.add(Input(shape=(240, 320, 3)))  # RGB images of size 240x320
+        self.theModel.add(Input(shape=self.inputShape))  # RGB images of size 240x320
 
         # Add a hidden layers
         self.theModel.add(Conv2D(filters=128, kernel_size=(3, 3), strides=(2,2), activation='sigmoid'))

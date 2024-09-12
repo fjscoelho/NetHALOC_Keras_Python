@@ -75,13 +75,13 @@ print('[[ MODEL TRAINED ]]')
 
 # Save the model
 print('[[ SAVING THE MODEL ]]')
-theModel.save('TRAINED_MODELS/ORIGINAL_MODEL_40EP/TEST_MODEL_trainDS1_valDS3_UseCNN')
+theModel.save('TRAINED_MODELS/grayScaleTest')
 print('[[ MODEL SAVED ]]')
 
 # Loading the model (not necessary, since it is already loaded. Loading is
 # performed just for the sake of completeness)
 print('[[ LOADING THE MODEL ]]')
-theModel.load('TRAINED_MODELS/ORIGINAL_MODEL_40EP/TEST_MODEL_trainDS1_valDS3_UseCNN')
+theModel.load('TRAINED_MODELS/grayScaleTest')
 print('[[ MODEL SAVED ]]')
 
 # Plot the training history
