@@ -53,6 +53,7 @@ for curLoop in dataSet.theLoops:
     # DataBase image
     plt.imshow(dbFileName)
     plt.figtext(0.5, 0.2, 'Q: '+ dataSet.qImageFns[curLoop[1]] + '      DB: '+dataSet.dbImageFns[curLoop[0]], ha="center")
+    # images[loopCount-1] = plt.figure(loopCount)
     plt.show()
 
 # for queryIndex in range(dataSet.numQImages):

@@ -21,7 +21,7 @@ theModel=ModelWrapper(outputSize=384)
 
 # Load a trained model
 print('[[ LOADING THE MODEL ]]')
-theModel.load('TRAINED_MODELS/ORIGINAL_MODEL_40EP_10ES/TEST_MODEL_trainDS2_valDS1')
+theModel.load('TRAINED_MODELS/ORIGINAL_MODEL_40EP/TEST_MODEL_trainDS1_valDS3_UseCNN')
 print('[[ MODEL SAVED ]]')
 
 # Plot the training history

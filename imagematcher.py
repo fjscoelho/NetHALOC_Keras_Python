@@ -38,7 +38,7 @@ class ImageMatcher:
 
     # Obtain SIFT features        
     def _get_sift_(self,theImage):
-        num_max_fea = 500  # Valor ajustado para 500
+        num_max_fea = 100  # Valor ajustado para 100
 
         # # Normalização e conversão para uint8
         # theImage = np.clip(theImage, 0, 1)  # Garante que os valores estão entre 0 e 1

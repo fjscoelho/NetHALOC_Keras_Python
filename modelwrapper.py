@@ -65,7 +65,7 @@ class ModelWrapper:
       
     # Private method to define the aforementioned cnnModel
     def __define_cnnmodel__(self):
-        self.cnnModel=Model(inputs=self.theModel.inputs,outputs=self.theModel.outputs) # modifiquei a saída para a última camada
+        self.cnnModel=Model(inputs=self.theModel.inputs,outputs=self.theModel.layers[5].output) # A saída da CNN é a camada Flatten
 
     # Just a helper to build filenames
     def __build_filenames__(self,fileName):

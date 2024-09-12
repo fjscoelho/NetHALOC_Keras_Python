@@ -68,20 +68,20 @@ theModel=ModelWrapper(outputSize=384)
 theModel.create()
 print('[[ MODEL CREATED ]]')
 
-# Train the model with dataset and validate with dataset2
-print('[[ TRAINING WITH DATASET1 AND VALIDATING WITH DATASET3 ]]')
-theModel.train(trainGenerator=dataGenerator1,valGenerator=dataGenerator3,nEpochs=40)
+# Train the model with dataset2 and validate with dataset1
+print('[[ TRAINING WITH DATASET2 AND VALIDATING WITH DATASET1 ]]')
+theModel.train(trainGenerator=dataGenerator2,valGenerator=dataGenerator1,nEpochs=40)
 print('[[ MODEL TRAINED ]]')
 
 # Save the model
 print('[[ SAVING THE MODEL ]]')
-theModel.save('TRAINED_MODELS/ORIGINAL_MODEL_40EP_10ES/TEST_MODEL_trainDS1_valDS3')
+theModel.save('TRAINED_MODELS/ORIGINAL_MODEL_40EP/TEST_MODEL_trainDS1_valDS3_UseCNN')
 print('[[ MODEL SAVED ]]')
 
 # Loading the model (not necessary, since it is already loaded. Loading is
 # performed just for the sake of completeness)
 print('[[ LOADING THE MODEL ]]')
-theModel.load('TRAINED_MODELS/ORIGINAL_MODEL_40EP_10ES/TEST_MODEL_trainDS1_valDS3')
+theModel.load('TRAINED_MODELS/ORIGINAL_MODEL_40EP/TEST_MODEL_trainDS1_valDS3_UseCNN')
 print('[[ MODEL SAVED ]]')
 
 # Plot the training history
@@ -90,8 +90,8 @@ theModel.plot_training_history()
 print('[[ PLOT DONE ]]')
 
 # Load the test dataset
-print('[[ LOADING DATASET 2 ]]')
-dataSet=DataSet('DATASETS/DATASET2.TXT')
+print('[[ LOADING DATASET 3 ]]')
+dataSet=DataSet('DATASETS/DATASET3.TXT')
 print('[[ DATASET LOADED ]]')
 
 # Load the model, this model corresponds to the original dense layer configuration of the model wrapper: 512, 1024,384
