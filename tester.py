@@ -137,7 +137,7 @@ class Tester:
             for dbIndex in range(self.testDataSet.numDBImages): # For all database images
                 isLoop=dbIndex in dbActualLoops # See if the dBIndex is identical to the set of images that contain loops
                 foundLoop=False
-                if dbIndex in dbLoopCandidates: # If the DbIndex image is the five 5 loop candidates
+                if dbIndex in dbLoopCandidates: # If the DbIndex image is in the five 5 loop candidates
                     dbImage=self.testDataSet.get_dbimage(dbIndex)
                     self.theMatcher.define_images(qImage,dbImage)
                     foundLoop=self.theMatcher.estimate() # Verify if there is a loop closing RANSAC between query and dB

@@ -21,7 +21,7 @@ theModel=ModelWrapper(outputSize=384)
 
 # Load a trained model
 print('[[ LOADING THE MODEL ]]')
-theModel.load('TRAINED_MODELS/ORIGINAL_MODEL_40EP/TEST_MODEL_trainDS1_valDS3_UseCNN')
+theModel.load('TRAINED_MODELS/ADAM_LLlinear_EP40_ES10_BS4/trds1valds2')
 print('[[ MODEL SAVED ]]')
 
 # Plot the training history
@@ -43,9 +43,9 @@ print('[[ TESTER CREATED ]]')
 
 # Computing and plotting hit ratio evolution
 print('[[ COMPUTING AND PLOTTING HIT RATIO EVOLUTION ]]')
-# theHR,thaAUC=theTester.compute_hitratio_evolution()
-# theTester.plot_hitratio_evolution()
-# print('[[ HIT RATIO EVOLUTION COMPUTED AND PLOTTED ]]')
+theHR,thaAUC=theTester.compute_hitratio_evolution()
+theTester.plot_hitratio_evolution()
+print('[[ HIT RATIO EVOLUTION COMPUTED AND PLOTTED ]]')
 
 # Computing and printing full stats
 print('[[ COMPUTING AND PRINTING FULL STATS ]]')

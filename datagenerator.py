@@ -312,6 +312,15 @@ class DataGeneratorHALOCLoops(Sequence):
         self.vector3=vector3
         self.on_epoch_end()
 
+    # Verify if is a Gray scale image and convert to RGB
+    def gs_to_RGB(self,theImage):
+        if len(theImage.shape) == 2: # GrayScale Image
+            RGBImage = cv2.cvtColor(theImage, cv2.COLOR_GRAY2RGB)
+        else:
+            RGBImage = theImage
+        return RGBImage    
+
+
     def __len__(self):
         return int(np.ceil(self.dataSet.numLoops/float(self.batchSize)))
 
@@ -337,55 +346,50 @@ class DataGeneratorHALOCLoops(Sequence):
     
    
     def __get_descriptors__(self,theImage): 
-        hash=np.zeros((384))
-        num_max_fea=100
-        # This norm. is just to prevent slightly larger than one values
-        theImage/=np.max(theImage)
-        ubImage=(theImage*255).astype('uint8')
-        print(ubImage.shape)
-        gsImage=cv2.cvtColor(ubImage,cv2.COLOR_RGB2GRAY) # convert to gray scale before computing SIFT
-        theSIFT=cv2.xfeatures2d.SIFT_create(((num_max_fea)-3)) 
-        keyPoints,theDescriptors=theSIFT.detectAndCompute(gsImage,None) 
-        nbr_of_keypoints=len(keyPoints)
-        # if nbr_of_keypoints==0:
-        #     print("ERROR: descriptor Matrix is Empty")
-        #     return 
-        # #if nbr_of_keypoints>len(self.vector1):
-        #     print("ERROR:  The number of descriptors is larger than the size of the projection vector. This should not happen.")
-        #     return
-        num_of_descriptors=theDescriptors.shape[0] #--> 100
-        num_of_components=theDescriptors.shape[1] # --> 128
-        hash=[]
-        dot = 0
-        dot_normalized=0
-        suma = 0
-        for i in range(num_of_components):
-            suma=0
-            for j in range(num_of_descriptors):
-                dot = theDescriptors[j,i]*self.vector1[j] # for a fixed component, (a fixed column) vary the descriptor (row): dot product 
-    #between the matrix column and the vector
-                dot_normalized = (dot + 1.0) / 2.0
-                suma = suma + dot_normalized
+        num_max_fea = 100  # Valor ajustado para 500
 
-            hash=np.append(hash, (suma/num_of_descriptors))   
-        for i in range(num_of_components):
-            suma=0
-            for j in range(num_of_descriptors):
-                dot = theDescriptors[j,i]*self.vector2[j] # for a fixed component, (a fixed column) vary the descriptor (row): dot product 
-    #between the matrix column and the vector
-                dot_normalized = (dot + 1.0) / 2.0
-                suma = suma + dot_normalized
+        # if len(theImage.shape) == 2: # GrayScale Image
+        #     RGBImage = cv2.cvtColor(theImage, cv2.COLOR_GRAY2RGB)
+        # else:
+        #     RGBImage = theImage
+        # Normalização e conversão para uint8
+        theImage = np.clip(theImage, 0, 1)  # Garante que os valores estão entre 0 e 1
+        ubImage = (theImage * 255).astype('uint8')  # Conversão para 8 bits
 
-            hash=np.append(hash, (suma/num_of_descriptors))   
-        for i in range(num_of_components):
-            suma=0
-            for j in range(num_of_descriptors):
-                dot = theDescriptors[j,i]*self.vector3[j] # for a fixed component, (a fixed column) vary the descriptor (row): dot product 
-    #between the matrix column and the vector
-                dot_normalized = (dot + 1.0) / 2.0
-                suma = suma + dot_normalized
+        # Criação do objeto SIFT com parâmetros ajustados
+        theSIFT = cv2.SIFT_create(
+            nfeatures=num_max_fea - 3,  # Ajusta o número máximo de características
+            contrastThreshold=0.04,  # Ajusta o limiar de contraste
+            edgeThreshold=10,  # Ajusta o limiar de borda
+            sigma=1.6  # Ajusta o valor sigma do Gaussian blur
+        )
 
-            hash=np.append(hash, (suma/num_of_descriptors))   
+        # Detecção de keypoints e descritores
+        keyPoints, theDescriptors = theSIFT.detectAndCompute(ubImage, None)
+
+        # Depuração
+        if theDescriptors is None or theDescriptors.shape[0] == 0:
+            return np.zeros(384)
+
+        # Número de descritores e componentes
+        num_of_descriptors = theDescriptors.shape[0]
+        num_of_components = theDescriptors.shape[1]
+
+        # Pré-alocação do vetor hash
+        hash = np.zeros(384)
+
+        # Cálculo do hash para cada vetor (vector1, vector2, vector3)
+        for idx, vector in enumerate([self.vector1, self.vector2, self.vector3]):
+            for i in range(num_of_components):
+                suma = 0
+                for j in range(min(num_of_descriptors, len(vector))):
+                    dot = theDescriptors[j, i] * vector[j]
+                    dot_normalized = (dot + 1.0) / 2.0  # Normalização para [0, 1]
+                    suma += dot_normalized
+
+                # Armazena o valor normalizado no vetor hash
+                hash[i + idx * num_of_components] = suma / num_of_descriptors
+
         return hash
         
     def __calculatevectors__(self,nmaxf):

@@ -44,7 +44,7 @@ import sys
 # cd /home/xesc/RECERCA/SUMMUM/CNN/python/NNLOOP # cd where you have your DATASETS folder
 
 from dataset import DataSet
-from datagenerator import DataGeneratorHALOCImages
+from datagenerator import DataGeneratorHALOCImages, DataGeneratorHALOCLoops
 from modelwrapper import ModelWrapper
 from tester import Tester
 
@@ -54,13 +54,20 @@ dataSet2=DataSet('DATASETS/DATASET2.TXT')
 dataSet3=DataSet('DATASETS/DATASET3.TXT')
 print('[[DATASETS LOADED ]]\n\n')
 
-# Create three data generators
+# Create three data generators (Unsupervised)
 print('[[ CREATING DATA GENERATORS ]]')
 dataGenerator1=DataGeneratorHALOCImages(dataSet1,batchSize=4)
 dataGenerator2=DataGeneratorHALOCImages(dataSet2,batchSize=4)
 dataGenerator3=DataGeneratorHALOCImages(dataSet3,batchSize=4)
 print('[[ GENERATORS CREATED ]]\n\n')
 
+# # Create three data generators (Supervised)
+# print('[[ CREATING DATA GENERATORS ]]')
+# dataGenerator1=DataGeneratorHALOCLoops(dataSet1,batchSize=4)
+# dataGenerator2=DataGeneratorHALOCLoops(dataSet2,batchSize=4)
+# dataGenerator3=DataGeneratorHALOCLoops(dataSet3,batchSize=4)
+
+print('[[ GENERATORS CREATED ]]\n\n')
 # Create the model, 384 is the lenght of the hash, this model corresponds to the swapt dense layer 
 # configuration of the model wrapper: 1024,512,384
 print('[[ CREATING THE MODEL ]]')
@@ -69,19 +76,19 @@ theModel.create()
 print('[[ MODEL CREATED ]]')
 
 # Train the model with dataset2 and validate with dataset1
-print('[[ TRAINING WITH DATASET2 AND VALIDATING WITH DATASET1 ]]')
-theModel.train(trainGenerator=dataGenerator2,valGenerator=dataGenerator1,nEpochs=40)
+print('[[ TRAINING WITH DATASET1 AND VALIDATING WITH DATASET2 ]]')
+theModel.train(trainGenerator=dataGenerator1,valGenerator=dataGenerator2,nEpochs=40)
 print('[[ MODEL TRAINED ]]')
 
 # Save the model
 print('[[ SAVING THE MODEL ]]')
-theModel.save('TRAINED_MODELS/grayScaleTest')
+theModel.save('TRAINED_MODELS/ADAM_Relu_LLlinear_EP40_ES10_BS4/trds1valds2')
 print('[[ MODEL SAVED ]]')
 
 # Loading the model (not necessary, since it is already loaded. Loading is
 # performed just for the sake of completeness)
 print('[[ LOADING THE MODEL ]]')
-theModel.load('TRAINED_MODELS/grayScaleTest')
+theModel.load('TRAINED_MODELS/ADAM_Relu_LLlinear_EP40_ES10_BS4/trds1valds2')
 print('[[ MODEL SAVED ]]')
 
 # Plot the training history
