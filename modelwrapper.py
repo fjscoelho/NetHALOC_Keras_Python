@@ -45,14 +45,14 @@ class ModelWrapper:
         self.theModel.add(Input(shape=self.inputShape))  # RGB images of size 240x320
 
         # Add a hidden layers
-        self.theModel.add(Conv2D(filters=128, kernel_size=(3, 3), strides=(2,2), activation='relu'))
+        self.theModel.add(Conv2D(filters=128, kernel_size=(3, 3), strides=(2,2), activation='sigmoid'))
         self.theModel.add(MaxPool2D(pool_size=(3,3),strides=(2,2)))
-        self.theModel.add(Conv2D(filters=64,kernel_size=(3,3), strides=(1,1),activation='relu'))
+        self.theModel.add(Conv2D(filters=64,kernel_size=(3,3), strides=(1,1),activation='sigmoid'))
         self.theModel.add(MaxPool2D(pool_size=(3,3),strides=(2,2)))
-        self.theModel.add(Conv2D(filters=4,kernel_size=(3,3),strides=(1,1),activation='relu'))
+        self.theModel.add(Conv2D(filters=4,kernel_size=(3,3),strides=(1,1),activation='sigmoid'))
         self.theModel.add(Flatten())
-        self.theModel.add(Dense(512, activation='relu'))
-        self.theModel.add(Dense(1024, activation='relu'))
+        self.theModel.add(Dense(512, activation='sigmoid'))
+        # self.theModel.add(Dense(1024, activation='sigmoid'))
         self.theModel.add(Dense(self.outputSize, activation=None))
 
         # Compile the model

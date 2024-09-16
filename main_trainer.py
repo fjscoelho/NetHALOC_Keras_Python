@@ -76,19 +76,19 @@ theModel.create()
 print('[[ MODEL CREATED ]]')
 
 # Train the model with dataset2 and validate with dataset1
-print('[[ TRAINING WITH DATASET1 AND VALIDATING WITH DATASET2 ]]')
-theModel.train(trainGenerator=dataGenerator1,valGenerator=dataGenerator2,nEpochs=40)
+print('[[ TRAINING WITH DATASET1 AND VALIDATING WITH DATASET3]]')
+theModel.train(trainGenerator=dataGenerator2,valGenerator=dataGenerator1,nEpochs=40)
 print('[[ MODEL TRAINED ]]')
 
 # Save the model
 print('[[ SAVING THE MODEL ]]')
-theModel.save('TRAINED_MODELS/ADAM_Relu_LLlinear_EP40_ES10_BS4/trds1valds2')
+theModel.save('TRAINED_MODELS/ADAM_Relu_LLlinear_EP40_ES10_BS4/trds3valds2')
 print('[[ MODEL SAVED ]]')
 
 # Loading the model (not necessary, since it is already loaded. Loading is
 # performed just for the sake of completeness)
 print('[[ LOADING THE MODEL ]]')
-theModel.load('TRAINED_MODELS/ADAM_Relu_LLlinear_EP40_ES10_BS4/trds1valds2')
+theModel.load('TRAINED_MODELS/ADAM_Relu_LLlinear_EP40_ES10_BS4/trds3valds2')
 print('[[ MODEL SAVED ]]')
 
 # Plot the training history
