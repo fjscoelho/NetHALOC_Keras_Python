@@ -56,9 +56,9 @@ print('[[DATASETS LOADED ]]\n\n')
 
 # Create three data generators (Unsupervised)
 print('[[ CREATING DATA GENERATORS ]]')
-dataGenerator1=DataGeneratorHALOCImages(dataSet1,batchSize=4)
-dataGenerator2=DataGeneratorHALOCImages(dataSet2,batchSize=4)
-dataGenerator3=DataGeneratorHALOCImages(dataSet3,batchSize=4)
+dataGenerator1=DataGeneratorHALOCImages(dataSet1,batchSize=6)
+dataGenerator2=DataGeneratorHALOCImages(dataSet2,batchSize=6)
+dataGenerator3=DataGeneratorHALOCImages(dataSet3,batchSize=6)
 print('[[ GENERATORS CREATED ]]\n\n')
 
 # # Create three data generators (Supervised)
@@ -77,18 +77,18 @@ print('[[ MODEL CREATED ]]')
 
 # Train the model with dataset2 and validate with dataset1
 print('[[ TRAINING WITH DATASET1 AND VALIDATING WITH DATASET3]]')
-theModel.train(trainGenerator=dataGenerator2,valGenerator=dataGenerator1,nEpochs=40)
+theModel.train(trainGenerator=dataGenerator3,valGenerator=dataGenerator2,nEpochs=40)
 print('[[ MODEL TRAINED ]]')
 
 # Save the model
 print('[[ SAVING THE MODEL ]]')
-theModel.save('TRAINED_MODELS/ADAM_Relu_LLlinear_EP40_ES10_BS4/trds3valds2')
+theModel.save('TRAINED_MODELS/ADAM_Original_EP40_ES10_BS6/trds3valds2')
 print('[[ MODEL SAVED ]]')
 
 # Loading the model (not necessary, since it is already loaded. Loading is
 # performed just for the sake of completeness)
 print('[[ LOADING THE MODEL ]]')
-theModel.load('TRAINED_MODELS/ADAM_Relu_LLlinear_EP40_ES10_BS4/trds3valds2')
+theModel.load('TRAINED_MODELS/ADAM_Original_EP40_ES10_BS6/trds3valds2')
 print('[[ MODEL SAVED ]]')
 
 # Plot the training history
@@ -97,8 +97,8 @@ theModel.plot_training_history()
 print('[[ PLOT DONE ]]')
 
 # Load the test dataset
-print('[[ LOADING DATASET 3 ]]')
-dataSet=DataSet('DATASETS/DATASET3.TXT')
+print('[[ LOADING DATASET 1 ]]')
+dataSet=DataSet('DATASETS/DATASET1.TXT')
 print('[[ DATASET LOADED ]]')
 
 # Load the model, this model corresponds to the original dense layer configuration of the model wrapper: 512, 1024,384

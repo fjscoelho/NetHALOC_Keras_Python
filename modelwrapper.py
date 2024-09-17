@@ -52,8 +52,8 @@ class ModelWrapper:
         self.theModel.add(Conv2D(filters=4,kernel_size=(3,3),strides=(1,1),activation='sigmoid'))
         self.theModel.add(Flatten())
         self.theModel.add(Dense(512, activation='sigmoid'))
-        # self.theModel.add(Dense(1024, activation='sigmoid'))
-        self.theModel.add(Dense(self.outputSize, activation=None))
+        self.theModel.add(Dense(1024, activation='sigmoid'))
+        self.theModel.add(Dense(self.outputSize, activation='sigmoid'))
 
         # Compile the model
         self.theModel.compile(optimizer='adam',loss='mse',metrics=['mae'])

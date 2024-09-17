@@ -35,14 +35,14 @@ def gs_to_RGB(theImage):
 
 
 # Define some parameters
-queryToUse=3
+queryToUse=0
 
 # Load a dataset
 dataSet=DataSet('DATASETS/DATASET1.TXT')
 
 # Load a trained model.
 theModel=ModelWrapper()
-theModel.load('TRAINED_MODELS/ORIGINAL_MODEL_40EP_10ES_RT180/trds2valds1')
+theModel.load('TRAINED_MODELS/ORIGINAL_MODEL_40EP_10ES/TEST_MODEL_trainDS2_valDS3')
 
 # Get the image size (NN input shape) and the descriptor size (NN output shape)
 imgSize=theModel.cnnModel.input_shape[1:3]
