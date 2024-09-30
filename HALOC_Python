@@ -90,22 +90,28 @@ qPath='/home/fabio/NetHALOC/NetHALOC_Keras_Python/DATASETS/QUERY/' # write here 
 dBPath='/home/fabio/NetHALOC/NetHALOC_Keras_Python/DATASETS/DATABASE/' # write here the global path of the corresponding database of images
 num_max_features=100 # define the maximum number of features
 
- # get the 3 orthogonal unitary vectors
+# get the 3 orthogonal unitary vectors
 
-vector1=np.random.uniform(0,1,num_max_features); # creates a vector of random numbers between 0 and 1
+# creates a vector of random numbers between 0 and 1
+vector1=np.random.uniform(0,1,num_max_features); 
 vector1 /= np.linalg.norm(vector1) # normalize vector 1
+
 # now create two vectors orthogonal to vector1 and with module = 1
-vector2 = np.random.uniform(0,1,(num_max_features-1)); # second random vector, one less  component 
+vector2 = np.random.uniform(0,1,(num_max_features-1)); # second random vector, one less component 
 const1=0
 long=num_max_features-1
 for i in range(long): # dot product between vector2 and vector 1 for the num_max_features-1 components
     const1=const1+(vector1[i]*vector2[i])
 
-xn=-const1/vector1[num_max_features-1] # the last component of vector2 and the one that makes vector1·vector2=0
-vector2=np.append(vector2, xn) # add the last component to vector2. Now, vector 1 and vector 2 are orthogonals
+# the last component of vector2 and the one that makes vector1·vector2=0
+xn=-const1/vector1[num_max_features-1]
+# add the last component to vector2. Now, vector 1 and vector 2 are orthogonals
+vector2=np.append(vector2, xn) 
 
-vector2 /= np.linalg.norm(vector2) # normalitzo vector2 otra vez
-vector3 = np.random.uniform(0,1,(num_max_features-2)); # create another vector , random and unitary
+vector2 /= np.linalg.norm(vector2) # vector2 normalization
+
+# create another vector , random and unitary
+vector3 = np.random.uniform(0,1,(num_max_features-2)); 
 
 
 # vector 3 is orthogonal to vector1 and vector2, forcing all components to be random except the two last, which will result from solving a system of two equations with two variables and 
@@ -132,7 +138,7 @@ X = np.linalg.solve(A, B) # solve the linear system. X[0] is the penultimate ele
 
 vector3=np.append(vector3, X[0]) ## append the last two elements to vector3
 vector3=np.append(vector3, X[1])
-vector3 /= np.linalg.norm(vector3) # normalitzo vector3
+vector3 /= np.linalg.norm(vector3) # normalize vector 3
 
   #  print ("lengh of vector3: "+str(len(vector3)))
 
